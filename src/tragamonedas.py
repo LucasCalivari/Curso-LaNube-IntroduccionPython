@@ -1,5 +1,6 @@
 import os
 import random
+from datetime import datetime
 
 # =====================================================
 #  🎰 TRAGAMONEDAS - ¡CÓDIGO DAÑADO!
@@ -27,6 +28,12 @@ APUESTA = 10
 
 # TODO 3: definir el nombre del archivo donde se guarda el saldo: "saldo.txt"
 ARCHIVO = "saldo.txt"
+
+# BONUS 2: el nombre del historial se genera UNA sola vez, al iniciar el
+#          programa, con la fecha y hora de inicio de la partida.
+#          Se usan guiones en la hora porque Windows no permite ":" en
+#          los nombres de archivo.
+ARCHIVO_HISTORIAL = "historial_partida_" + datetime.now().strftime("%Y-%m-%d_%H-%M") + ".txt"
 
 
 # ---------- FUNCIONES ----------
@@ -79,6 +86,17 @@ def calcular_premio(rodillos):
         return 0
 
 
+def registrar_tirada(rodillos, premio, saldo):
+    """BONUS 1: agrega una línea al historial con el resultado de la tirada."""
+    # Modo "a" (agregar): escribe al final sin borrar las líneas anteriores.
+    # encoding="utf-8" permite guardar los emojis también en Windows.
+    archivo = open(ARCHIVO_HISTORIAL, "a", encoding="utf-8")
+    hora = datetime.now().strftime("%H:%M:%S")
+    linea = f"{hora} | {' | '.join(rodillos)} | Premio: {premio} | Saldo: {saldo}\n"
+    archivo.write(linea)
+    archivo.close()
+
+
 # ---------- PROGRAMA PRINCIPAL ----------
 print("=== 🎰 TRAGAMONEDAS (fichas virtuales) 🎰 ===")
 
@@ -112,6 +130,9 @@ while True:
                 print("Perdiste. ¡Probá de nuevo!")
 
             guardar_saldo(saldo)
+
+            # BONUS 1: registrar la tirada en el historial de la partida
+            registrar_tirada(rodillos, premio, saldo)
         else:
             print("No tenés fichas. Cargá más con +")
     elif orden == "+":
